@@ -253,7 +253,7 @@ func disasm(syntax string, mode int, src []byte) (inst Inst, text string) {
 		case "intel":
 			text = IntelSyntax(inst)
 		case "plan9":
-			text = plan9Syntax(inst, 0, nil)
+			text = Plan9Syntax(inst, 0, nil)
 		default:
 			text = "error: unknown syntax " + syntax
 		}

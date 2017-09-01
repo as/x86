@@ -701,7 +701,7 @@ func printScanner(p *Prog) {
 			for j := 0; j < 8; j++ {
 				fmt.Printf("\t/* /%d */ %d,\n", j, out[i+2+2*n+j])
 			}
-			i += 1+2*n+8
+			i += 1 + 2*n + 8
 			continue
 		case scanSwitchPrefix:
 			fmt.Printf("scanSwitchPrefix, %d,\n", out[i+1])
@@ -709,7 +709,7 @@ func printScanner(p *Prog) {
 			for j := 0; j < n; j++ {
 				fmt.Printf("\t/* prefix */ %#x, %d,\n", out[i+2+2*j], out[i+2+2*j+1])
 			}
-			i += 1+2*n
+			i += 1 + 2*n
 			continue
 		case scanSwitchIs64:
 			fmt.Printf("scanSwitchIs64, %d, %d\n", out[i+1], out[i+2])
@@ -768,7 +768,7 @@ func walkScanTree(p *Prog, is64 int) {
 		}
 		walkScanTree(p.Child[key], is64)
 	}
-	
+
 	switch p.Action {
 	case "read", "match":
 		// keep
@@ -805,11 +805,11 @@ func walkScanTree(p *Prog, is64 int) {
 			return
 		}
 	}
-	
+
 	switch p.Action {
 	case "datasize":
 		if len(keys) == 2 && is64 == 0 || len(keys) == 3 {
-			if treeText(p.Child["16"]) == "read iw match ! \n" && treeText(p.Child["32"]) == "read id match ! \n" && (len(keys) == 2 ||treeText(p.Child["64"]) == "read id match ! \n" ) {
+			if treeText(p.Child["16"]) == "read iw match ! \n" && treeText(p.Child["32"]) == "read id match ! \n" && (len(keys) == 2 || treeText(p.Child["64"]) == "read id match ! \n") {
 				p.Action = "read"
 				p.Child = map[string]*Prog{"iwd/d": p.Child["16"].Child["iw"]}
 				return
@@ -819,24 +819,24 @@ func walkScanTree(p *Prog, is64 int) {
 				p.Child = map[string]*Prog{"iwdo/d": p.Child["16"].Child["iw"]}
 				return
 			}
-			if treeText(p.Child["16"]) == "read /r read iw match ! \n" && treeText(p.Child["32"]) == "read /r read id match ! \n" && (len(keys) == 2 ||treeText(p.Child["64"]) == "read /r read id match ! \n" ) {
+			if treeText(p.Child["16"]) == "read /r read iw match ! \n" && treeText(p.Child["32"]) == "read /r read id match ! \n" && (len(keys) == 2 || treeText(p.Child["64"]) == "read /r read id match ! \n") {
 				p.Action = "read"
 				p.Child = map[string]*Prog{"/r": {Action: "read", Child: map[string]*Prog{"iwd/d": p.Child["16"].Child["/r"].Child["iw"]}}}
 				return
 			}
-			if treeText(p.Child["16"]) == "read cw match ! \n" && treeText(p.Child["32"]) == "read cd match ! \n" && (len(keys) == 2 ||treeText(p.Child["64"]) == "read cd match ! \n" ) {
+			if treeText(p.Child["16"]) == "read cw match ! \n" && treeText(p.Child["32"]) == "read cd match ! \n" && (len(keys) == 2 || treeText(p.Child["64"]) == "read cd match ! \n") {
 				p.Action = "read"
 				p.Child = map[string]*Prog{"cwd/d": p.Child["16"].Child["cw"]}
 				return
 			}
-			if treeText(p.Child["16"]) == "read cd match ! \n" && treeText(p.Child["32"]) == "read cp match ! \n" && (len(keys) == 2 ||treeText(p.Child["64"]) == "read cp match ! \n" ) {
+			if treeText(p.Child["16"]) == "read cd match ! \n" && treeText(p.Child["32"]) == "read cp match ! \n" && (len(keys) == 2 || treeText(p.Child["64"]) == "read cp match ! \n") {
 				p.Action = "read"
 				p.Child = map[string]*Prog{"cdp/d": p.Child["16"].Child["cd"]}
 				return
 			}
 			fmt.Printf("!! %q\n", treeText(p.Child["16"]))
 		}
-	
+
 	case "is64":
 		if len(keys) == 2 && treeText(p.Child["0"]) == "read cwd/d match ! \n" && treeText(p.Child["1"]) == "read cd match ! \n" {
 			*p = *p.Child["0"]
@@ -847,19 +847,19 @@ func walkScanTree(p *Prog, is64 int) {
 			return
 		}
 	}
-	
+
 	/*
-	match := make(map[string][]string)
-	for _, key := range keys {
-		text := treeText(p.Child[key])
-		match[text] = append(match[text], key)
-	}
-	child := make(map[string]*Prog)
-	for _, keys := range match {
-		child[strings.Join(keys, ",")] = p.Child[keys[0]]
-	}
-	p.Child = child	
-	*/		
+		match := make(map[string][]string)
+		for _, key := range keys {
+			text := treeText(p.Child[key])
+			match[text] = append(match[text], key)
+		}
+		child := make(map[string]*Prog)
+		for _, keys := range match {
+			child[strings.Join(keys, ",")] = p.Child[keys[0]]
+		}
+		p.Child = child
+	*/
 }
 
 func treeText(p *Prog) string {
@@ -975,7 +975,7 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			val, valn := decodeKeyPlus(key)
 			targ := emitScanFunc(p.Child[key], out)
 			for j := 0; j < valn; j++ {
-				(*out)[off] = uint16(val+j)
+				(*out)[off] = uint16(val + j)
 				off++
 				(*out)[off] = targ
 				off++
@@ -989,7 +989,7 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			(*out)[off+int(key[1]-'0')] = emitScanFunc(p.Child[key], out)
 		}
 		return start
-	
+
 	case "read":
 		switch keys[0] {
 		default:
@@ -999,7 +999,7 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 		case "ib":
 			*out = append(*out, scanReadIB)
 		case "iw":
-			*out= append(*out, scanReadIW)
+			*out = append(*out, scanReadIW)
 		case "cb":
 			*out = append(*out, scanReadCB)
 		case "cm":
@@ -1022,11 +1022,11 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			(*out)[off-1] = emitScanFunc(next, out)
 		}
 		return start
-	
+
 	case "match":
 		*out = append(*out, scanMatch)
 		return start
-	
+
 	case "is64":
 		*out = append(*out, scanSwitchIs64, 0, 0)
 		if next := p.Child["0"]; next != nil {
@@ -1036,7 +1036,7 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			(*out)[start+2] = emitScanFunc(next, out)
 		}
 		return start
-	
+
 	case "ismem":
 		*out = append(*out, scanSwitchIsMem, 0, 0)
 		if next := p.Child["0"]; next != nil {
@@ -1046,7 +1046,7 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			(*out)[start+2] = emitScanFunc(next, out)
 		}
 		return start
-	
+
 	case "datasize":
 		*out = append(*out, scanSwitchDatasize, 0, 0, 0)
 		if next := p.Child["16"]; next != nil {
@@ -1069,14 +1069,13 @@ func emitScanFunc(p *Prog, out *[]uint16) uint16 {
 			(*out)[int(start)+2+2*i+1] = emitScanFunc(p.Child[keys[i]], out)
 		}
 		return start
-		
+
 	}
-	
+
 	log.Fatalf("unexpected action %q", p.Action)
 	return start
 }
-		
-		
+
 // printDecoderPass prints the decoding table program for p,
 // assuming that we are emitting code at the given program counter.
 // It returns the new current program counter, that is, the program
